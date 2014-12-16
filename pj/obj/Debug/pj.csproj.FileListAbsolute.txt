@@ -1,0 +1,9 @@
+c:\users\lenovo\documents\visual studio 2013\Projects\pj\pj\bin\Debug\pj.exe.config
+c:\Users\lenovo\Documents\Visual Studio 2013\Projects\pj\pj\bin\Debug\pj.exe
+c:\Users\lenovo\Documents\Visual Studio 2013\Projects\pj\pj\bin\Debug\pj.pdb
+c:\Users\lenovo\Documents\Visual Studio 2013\Projects\pj\pj\obj\Debug\pj.csprojResolveAssemblyReference.cache
+c:\Users\lenovo\Documents\Visual Studio 2013\Projects\pj\pj\obj\Debug\pj.Form1.resources
+c:\Users\lenovo\Documents\Visual Studio 2013\Projects\pj\pj\obj\Debug\pj.Properties.Resources.resources
+c:\Users\lenovo\Documents\Visual Studio 2013\Projects\pj\pj\obj\Debug\pj.csproj.GenerateResource.Cache
+c:\Users\lenovo\Documents\Visual Studio 2013\Projects\pj\pj\obj\Debug\pj.exe
+c:\Users\lenovo\Documents\Visual Studio 2013\Projects\pj\pj\obj\Debug\pj.pdb
