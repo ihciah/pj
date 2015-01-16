@@ -21,11 +21,13 @@
 ### 成员变量
 
 + ```bool isdataloaded``` : 是否加载地图文件
-+ ```Dictionary<int， way> ways``` : 存储道路、建筑物等的id(作key)、名字(zhs、eng)和node id列表
-+ ```Dictionary<int, position> dict``` : id和位置(存储经纬度的position类型)对应的字典
++ ```Dictionary<long, way> ways``` : 存储道路、建筑物等的id(作key)、名字(只存zhs，没有zhs则存储eng)和node id列表
++ ```Dictionary<long, position> dict``` : id和位置(存储经纬度的position类型)对应的字典
++ ```Dictionary<string, idd> places``` :存储名字对应的id以及idtype
 + ```float mapedge[4]``` : 存储地图文件的边界
 + ```float curedge[4]``` : 存储当前显示区域的边界
 + ```float box[2]``` : 绘图区域的大小(边界)
++ ```Graphics g``` : 绘图区域
 + ```int zoom``` : 当前缩放级别
 
 ### 公有成员函数
@@ -33,7 +35,7 @@
 ####```map()``` : 
 + 创建空的map对象
 
-####```map(Graphics g, string file)``` : 
+####```map(Graphics g, string file, int height, int width)``` : 
 + 使用给定绘图区域和文件路径创建新对象
 
 ####```bool readfile(string file)``` : 
