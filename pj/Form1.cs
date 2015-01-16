@@ -25,13 +25,13 @@ namespace pj
         {
             if (e.Delta > 0&&m!=null)
             {
-                m.zoomnow *= 2;
+                m.zoomnow *= 1.3;
                 m.clearpic();
                 m.draw();
             }
             else if (e.Delta < 0 && m != null)
             {
-                double t = m.zoomnow / 2;
+                double t = m.zoomnow / 1.5;
                 if (t < m.zoommin)
                 {
                     m.zoomnow = m.zoommin;
@@ -98,6 +98,7 @@ namespace pj
             {
                 pictureBox1.Image = m.bitmap;
                 label3.Text = ((int)m.zoomnow).ToString();
+                label5.Text = "1:" + ((int)(label4.Size.Width / m.zoomnow * 100000)).ToString();
             }
         }
 
@@ -118,10 +119,24 @@ namespace pj
 
         private void button3_Click(object sender, EventArgs e)
         {
-            m.findroad(textBox2.Text, textBox3.Text);
+            m.findroad(textBox2.Text, textBox3.Text,0);
+            m.clearpic();
+            m.draw();
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            m.findroad(textBox2.Text, textBox3.Text, 1);
+            m.clearpic();
+            m.draw();
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
         {
 
         }

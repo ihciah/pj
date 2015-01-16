@@ -7,6 +7,7 @@ using System.Text;
 using System.Xml;
 using System.Windows.Forms;
 
+
 namespace pj
 {
     
@@ -30,7 +31,7 @@ namespace pj
         public double zoomnow;
         public double zoommin;
         int[] indexsize;
-
+        double MINSHOW = 20000;
         public struct way
         {
             public long id;
@@ -59,10 +60,12 @@ namespace pj
         {
             public long id;
             public double dis;
-            public iddis(long id, double dis)
+            public double wdis;
+            public iddis(long id, double dis,double wdis)
             {
                 this.id = id;
                 this.dis=dis;
+                this.wdis = wdis;
             }
         }
         public struct building
@@ -137,12 +140,9 @@ namespace pj
             IComparer<T> comparer;
             T[] heap;
 
-            public int Count { get; private set; }
-
+            public int Count;
             public PriorityQueue() : this(null) { }
-            public PriorityQueue(int capacity) : this(capacity, null) { }
             public PriorityQueue(IComparer<T> comparer) : this(16, comparer) { }
-
             public PriorityQueue(int capacity, IComparer<T> comparer)
             {
                 this.comparer = (comparer == null) ? Comparer<T>.Default : comparer;
@@ -303,6 +303,10 @@ namespace pj
                             case "secondary": c = 's'; break;
                             case "footway": c = 'f'; break;
                             case "service": c = 'e'; break;
+                            case "motorway": c = 'm'; break;
+                            case "trunk": c = 'k'; break;
+                            case "primary": c = 'p'; break;
+                            case "track": c = 'c'; break;
                         }
                         ways[wayid] = new way(wayid, wayname, nodelist, c,pos);
                         if (wayname != null)
@@ -370,15 +374,29 @@ namespace pj
 
             foreach (way w in ways.Values)
             {
+                double weigh = 1;
+                switch (w.highway){
+                    case 'm': weigh = 0.8; break;
+                    case 'k': weigh = 0.85; break;
+                    case 'p': weigh = 0.9; break;
+                    case 's': weigh = 1; break;
+                    case 't': weigh = 1.1; break;
+                    case 'u': weigh = 1.3; break;
+                    case 'r': weigh = 1.2; break;
+                    case 'e': weigh = 1.3; break;
+                    case 'c': weigh = 1.4; break;
+                }
                 for (int i = 1; i < w.nodelist.Count; i++)
                 {
                     double dis=Math.Sqrt(calcd(nodedict[w.nodelist[i]].lat,nodedict[w.nodelist[i]].lon,nodedict[w.nodelist[i-1]].lat,nodedict[w.nodelist[i-1]].lon));
-                    iddis idanddis=new iddis(w.nodelist[i-1],dis);
-                    iddis idanddis2 = new iddis(w.nodelist[i], dis);
+                    double ndis = dis * weigh;
+                    iddis idanddis=new iddis(w.nodelist[i-1],dis,ndis);
+                    iddis idanddis2 = new iddis(w.nodelist[i], dis,ndis);
                     nodedict[w.nodelist[i]].adj.Add(idanddis);
                     nodedict[w.nodelist[i-1]].adj.Add(idanddis2);
                 }
             }
+            //构建距离信息
 
             double zoomh = (double)box[0] / (bounds[2] - bounds[0]);
             double zoomw = (double)box[1] / (bounds[3] - bounds[1]);
@@ -387,7 +405,6 @@ namespace pj
                 curedge[o] = bounds[o];
             //初始化
 
-            //dijk(63279282, 1720857559);
             return true;
         }
         public void draw()
@@ -399,6 +416,18 @@ namespace pj
 
             curedge[3] = curedge[1] + box[1] / zoomnow;
             curedge[2] = curedge[0] + box[0] / zoomnow;
+            if(curedge[2]>bounds[2])
+            {
+                curedge[2] = bounds[2];
+                curedge[0] = bounds[2] - box[0] / zoomnow;
+                curedge[0] = Math.Max(curedge[0], bounds[0]);
+            }
+            if (curedge[3] > bounds[3])
+            {
+                curedge[3] = bounds[3];
+                curedge[1] = bounds[1] - box[1] / zoomnow;
+                curedge[1] = Math.Max(curedge[1], bounds[1]);
+            }
             int[] min = whichindex(curedge[0], curedge[1]);
             int[] max = whichindex(curedge[2], curedge[3]);
             max[0] = Math.Min(max[0], indexsize[0]);
@@ -427,6 +456,19 @@ namespace pj
         
         private void drawway(way w)
         {
+            Pen p = new Pen(Color.White, 1);
+            switch (w.highway)
+            {
+                case 'm': p = new Pen(Color.Blue, 5); break;
+                case 'k': p = new Pen(Color.Green, 4); break;
+                case 'p': if (zoomnow < 2000) return; else { p = new Pen(Color.Orange, 4); } break;
+                case 's': if (zoomnow < 2500) return; else { p = new Pen(Color.Yellow, 3); } break;
+                case 't': if (zoomnow < 3000) return; else { p = new Pen(Color.White, 2); } break;
+                case 'u': if (zoomnow < 6000) return; else { p = new Pen(Color.White, 2); } break;
+                case 'r': if (zoomnow < 7000) return; else { p = new Pen(Color.White, 2); } break;
+                case 'e': if (zoomnow < 8000) return; else { p = new Pen(Color.White, 1); } break;
+                case 'c': if (zoomnow < 30000) return; else { p = new Pen(Color.White, 1); } break;
+            }
             if (w.nodelist.Count <= 1)
                 return;
             Point[] li = new Point[w.nodelist.Count];
@@ -437,7 +479,6 @@ namespace pj
                 pos=trans(nodedict[id].lat, nodedict[id].lon, zoomnow,curedge);
                 li[co++]=new Point((int)pos[0], (int)pos[1]);
             }
-            Pen p = new Pen(Color.Blue, 1);
             g.DrawLines(p, li);
         }
         private void drawway(building w)
@@ -452,11 +493,12 @@ namespace pj
                 pos = trans(nodedict[id].lat, nodedict[id].lon, zoomnow,curedge);
                 li[co++] = new Point((int)pos[0], (int)pos[1]);
             }
-            Pen p = new Pen(Color.Green, 1);
+            Pen p = new Pen(Color.Gray, 1);
             g.DrawLines(p, li);
-            if (w.name != null && w.name != "")
+
+            if (zoomnow>MINSHOW&&w.name != null && w.name != "")
             {
-                g.DrawString(w.name, new Font("宋体", 10), new SolidBrush(Color.Tomato), li[0]);
+                g.DrawString(w.name, new Font("宋体", 9), new SolidBrush(Color.Tomato), li[0]);
             }
         }
         private void drawspotanddir()
@@ -467,6 +509,12 @@ namespace pj
                 pos = trans(nodedict[id].lat, nodedict[id].lon, zoomnow,curedge);
                 Pen p = new Pen(Color.Red, 5);
                 g.DrawLine(p, (int)pos[0], (int)pos[1], (int)pos[0] + 5, (int)pos[1] + 5);
+
+                if (nodedict[id].name != null && nodedict[id].name != "")
+                {
+                    Point x = new Point((int)pos[0], (int)pos[1]);
+                    g.DrawString(nodedict[id].name, new Font("宋体", 9), new SolidBrush(Color.Tomato), x);
+                }
             }
             if (dirlist.Count == 0)
                 return;
@@ -478,7 +526,7 @@ namespace pj
                 pos = trans(nodedict[id].lat, nodedict[id].lon, zoomnow, curedge);
                 li[co++] = new Point((int)pos[0], (int)pos[1]);
             }
-            Pen rp = new Pen(Color.Red, 1);
+            Pen rp = new Pen(Color.Red, 5);
             g.DrawLines(rp, li);
         }
         public void clearpic()
@@ -525,7 +573,7 @@ namespace pj
                 MessageBox.Show("Place " + name + " not found.");
             }
         }
-        public void findroad(string name1, string name2)
+        public void findroad(string name1, string name2,int option)
         {
             if (!places.ContainsKey(name1) || !places.ContainsKey(name2))
             {
@@ -551,7 +599,54 @@ namespace pj
             }
             spotlist.Add(st);
             spotlist.Add(en);
-            dijk(st, en);
+            if(option==1)
+                dijk(st, en,1);
+            else
+                dijk(st, en);
+        }
+        public void dijk(long st, long en)
+        {
+            Dictionary<long, rnode> D = new Dictionary<long, rnode>();
+            Dictionary<long, long> direc = new Dictionary<long, long>();
+            PriorityQueue<rnode> Q = new PriorityQueue<rnode>();
+
+
+            foreach (KeyValuePair<long, node> i in nodedict)
+            {
+                D[i.Key] = new rnode(i.Key);
+            }
+            D[st].dis = 0;
+            Q.Push(D[st]);
+            while (Q.Count != 0)
+            {
+                rnode x = Q.Top();
+                Q.Pop();
+                if (x.vis)
+                    continue;
+                D[x.id].vis = true;
+                foreach (iddis l in nodedict[x.id].adj)
+                {
+                    if (D[l.id].dis > x.dis + l.dis)
+                    {
+                        D[l.id].dis = x.dis + l.dis;
+                        direc[l.id] = x.id;
+                        Q.Push(D[l.id]);
+                    }
+                    if (l.id == en)
+                    {
+                        //copy direc to path
+                        long t = en;
+                        dirlist.Clear();
+                        dirlist.Add(en);
+                        while (t != st)
+                        {
+                            t = direc[t];
+                            dirlist.Add(t);
+                        }
+                        return;
+                    }
+                }
+            }
         }
         private long tonode(long id){
             if (!nodedict.ContainsKey(id))
@@ -566,7 +661,7 @@ namespace pj
                 }
                 else
                 {
-                    MessageBox.Show("Cannot find place.");
+                    MessageBox.Show("地点未找到");
                 }
             }
             return id;
@@ -580,7 +675,14 @@ namespace pj
             int [] x= whichindex(lat,lon);
             long res = 0 ;
             if (indexway[x[0], x[1]].Count == 0)
-                x[1]++;//待修改
+            {
+                if (x[0] != 0) x[0]--;
+            }
+            else if (indexway[x[0], x[1]].Count == 0)
+            {
+                if (x[1] != 0) x[1]--;
+            }
+                
             foreach (long w in indexway[x[0],x[1]])
             {
                 foreach (long k in ways[w].nodelist)
@@ -627,41 +729,42 @@ namespace pj
             }
             return 999;//INF
         }
-        public void dijk(long st, long en)
+        
+
+        public void dijk(long st, long en,int option)
         {
-            Dictionary<long, rnode> D=new Dictionary<long,rnode>();
-            Dictionary<long, long> direc=new Dictionary<long,long>();
-            //SortedList<rnode,rnode> Q=new SortedList<rnode,rnode>();
-            PriorityQueue<rnode> Q= new PriorityQueue<rnode>();
+            Dictionary<long, rnode> D = new Dictionary<long, rnode>();
+            Dictionary<long, long> direc = new Dictionary<long, long>();
+            PriorityQueue<rnode> Q = new PriorityQueue<rnode>();
 
 
-            foreach (KeyValuePair<long,node> i in nodedict)
+            foreach (KeyValuePair<long, node> i in nodedict)
             {
                 D[i.Key] = new rnode(i.Key);
             }
             D[st].dis = 0;
 
-            //Q.Add(D[st],D[st]);
             Q.Push(D[st]);
-            while(Q.Count!=0){
+            while (Q.Count != 0)
+            {
                 rnode x = Q.Top();
                 Q.Pop();
-                //Q.Remove(Q.Min);
-                
-                if(x.vis)
+
+                if (x.vis)
                     continue;
-                D[x.id].vis=true;
-                foreach(iddis l in nodedict[x.id].adj){
-                    if(D[l.id].dis>x.dis+l.dis){
-                        D[l.id].dis=x.dis+l.dis;
-                        direc[l.id]=x.id;
-                        //Q.Add(D[l.id]);
+                D[x.id].vis = true;
+                foreach (iddis l in nodedict[x.id].adj)
+                {
+                    if (D[l.id].dis > x.dis + l.wdis)
+                    {
+                        D[l.id].dis = x.dis + l.wdis;
+                        direc[l.id] = x.id;
                         Q.Push(D[l.id]);
                     }
                     if (l.id == en)
                     {
                         //copy direc to path
-                        long t=en;
+                        long t = en;
                         dirlist.Clear();
                         dirlist.Add(en);
                         while (t != st)
@@ -669,12 +772,10 @@ namespace pj
                             t = direc[t];
                             dirlist.Add(t);
                         }
-                        //MessageBox.Show("Found.");
                         return;
                     }
                 }
             }
-
         }
     }
 }
