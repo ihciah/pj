@@ -32,7 +32,6 @@ namespace pj
         public double zoomnow;
         public double zoommin;
         int[] indexsize;
-        double MINSHOW = 20000;
         Random rnd = new Random();
         public struct way
         {
@@ -620,6 +619,7 @@ namespace pj
                 {
                     spotlist.Add(buildings[places[name].id].nodelist[0]);
                 }
+                clearpic();
                 draw();
             }
             else

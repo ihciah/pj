@@ -158,6 +158,12 @@ namespace pj
             m.clearpic();
             m.draw();
         }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            AboutBox1 about1 = new AboutBox1();
+            about1.Show();
+        }
         
     }
 }

@@ -7,3 +7,4 @@ c:\Users\lenovo\Documents\Visual Studio 2013\Projects\pj\pj\obj\Debug\pj.Propert
 c:\Users\lenovo\Documents\Visual Studio 2013\Projects\pj\pj\obj\Debug\pj.csproj.GenerateResource.Cache
 c:\Users\lenovo\Documents\Visual Studio 2013\Projects\pj\pj\obj\Debug\pj.exe
 c:\Users\lenovo\Documents\Visual Studio 2013\Projects\pj\pj\obj\Debug\pj.pdb
+C:\Users\lenovo\Documents\Visual Studio 2013\Projects\pj\pj\obj\Debug\pj.AboutBox1.resources
