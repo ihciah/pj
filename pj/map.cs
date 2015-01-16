@@ -13,7 +13,8 @@ namespace pj
     
     public class map
     {
-        bool isdataloaded;
+        double[] blockbounds = new double[4];
+        int isblocked = 0;
         Graphics g,gmain;
         public Bitmap bitmap;
         HashSet<long>[,] indexway;
@@ -192,17 +193,13 @@ namespace pj
         
         public map(Graphics pg, string file,int height,int width)
         {
-            isdataloaded = false;
             g = pg;
             box[0] = height;
             box[1] = width;
             bitmap = new Bitmap(width, height);
             g = Graphics.FromImage(bitmap);
             gmain = pg;
-            if(readfile(file))
-            {
-                isdataloaded = true;
-            }
+            readfile(file);
             draw();
         }
         public bool readfile(string name)
@@ -452,6 +449,15 @@ namespace pj
             }
             drawspotanddir();//画搜索出的点和路径
 
+            if (isblocked == 2)
+            {
+                Pen p = new Pen(Color.Black, 5);
+                double[] poss = new double[2];
+                double[] pose = new double[2];
+                poss = trans(blockbounds[2], blockbounds[1], zoomnow, curedge);
+                pose = trans(blockbounds[0], blockbounds[3], zoomnow, curedge);
+                g.DrawRectangle(p, (int)poss[0], (int)poss[1], (int)pose[0] - (int)poss[0], (int)pose[1] - (int)poss[1]);
+            }
         }
         
         private void drawway(way w)
@@ -623,6 +629,12 @@ namespace pj
                 Q.Pop();
                 if (x.vis)
                     continue;
+                if (isblocked == 2)
+                {
+                    node tt = nodedict[x.id];
+                    if (tt.lat > blockbounds[0] && tt.lat < blockbounds[2] && tt.lon < blockbounds[3] && tt.lon > blockbounds[1])
+                        continue;
+                }
                 D[x.id].vis = true;
                 foreach (iddis l in nodedict[x.id].adj)
                 {
@@ -729,7 +741,30 @@ namespace pj
             }
             return 999;//INF
         }
-        
+        public void click(double lon, double lat)
+        {
+            if (isblocked == 0 || isblocked == 2)
+            {
+                blockbounds[0] = lat;
+                blockbounds[1] = lon;
+                isblocked = 1;
+            }
+            else if (isblocked == 1)
+            {
+                blockbounds[2] = lat;
+                blockbounds[3] = lon;
+                double tmin, tmax;
+                tmin = Math.Min(blockbounds[0], blockbounds[2]);
+                tmax = Math.Max(blockbounds[0], blockbounds[2]);
+                blockbounds[0] = tmin; blockbounds[2] = tmax;
+                tmin = Math.Min(blockbounds[1], blockbounds[3]);
+                tmax = Math.Max(blockbounds[1], blockbounds[3]);
+                blockbounds[1] = tmin; blockbounds[3] = tmax;
+                isblocked = 2;
+                clearpic();
+                draw();
+            }
+        }
 
         public void dijk(long st, long en,int option)
         {
@@ -752,6 +787,12 @@ namespace pj
 
                 if (x.vis)
                     continue;
+                if (isblocked == 2)
+                {
+                    node tt = nodedict[x.id];
+                    if (tt.lat > blockbounds[0] && tt.lat < blockbounds[2] && tt.lon < blockbounds[3] && tt.lon > blockbounds[1])
+                        continue;
+                }
                 D[x.id].vis = true;
                 foreach (iddis l in nodedict[x.id].adj)
                 {

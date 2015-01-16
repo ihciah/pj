@@ -55,6 +55,13 @@ namespace pj
         {
             if (m == null)
                 return;
+            if (e.Y == mousepos[0] && e.X == mousepos[1])
+            {
+                double lon = (m.box[0] - mousepos[0]) / m.zoomnow + m.curedge[0];
+                double lat = mousepos[1] / m.zoomnow + m.curedge[1];
+                m.click(lat, lon);
+                return;
+            }
             double changeposx = (e.Y - mousepos[0]) / m.zoomnow;
             double changeposy = (e.X - mousepos[1]) / m.zoomnow;
             m.curedge[0] += changeposx;
