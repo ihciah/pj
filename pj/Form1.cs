@@ -49,6 +49,7 @@ namespace pj
         {
             mousepos[0] = e.Y;
             mousepos[1] = e.X;
+            
         }
 
         private void pictureBox1_MouseUp(object sender, MouseEventArgs e)

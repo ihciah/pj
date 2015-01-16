@@ -33,6 +33,7 @@ namespace pj
         public double zoommin;
         int[] indexsize;
         double MINSHOW = 20000;
+        Random rnd = new Random();
         public struct way
         {
             public long id;
@@ -489,7 +490,7 @@ namespace pj
         
         private void drawway(way w)
         {
-            Pen p = new Pen(Color.White, 1);
+            Pen p = new Pen(Color.FromArgb(100, 222, 223, 231), 1);
             switch (w.highway)
             {
                 case 'm': p = new Pen(Color.Blue, 5); break;
@@ -526,13 +527,33 @@ namespace pj
                 pos = trans(nodedict[id].lat, nodedict[id].lon, zoomnow,curedge);
                 li[co++] = new Point((int)pos[0], (int)pos[1]);
             }
-            Pen p = new Pen(Color.Gray, 1);
-            g.DrawLines(p, li);
+            Pen p = new Pen(Color.FromArgb(100, 222, 223, 231), 1);
+            SolidBrush b = new SolidBrush(Color.FromArgb(100, 222, 223, 231));
 
-            if (zoomnow>MINSHOW&&w.name != null && w.name != "")
+            if(li[li.Length-1]==li[0])
+                g.FillPolygon(b, li);
+            else
+                g.DrawLines(p, li);
+
+            double prob = 0.5;
+            if (zoomnow < 5000)
+                prob = 2;
+            else if (zoomnow < 8000)
+                prob = 4;
+            else if (zoomnow < 12000)
+                prob = 10;
+            else if (zoomnow < 24000)
+                prob = 50;
+            else if (zoomnow < 30000)
+                prob = 80;
+            else
+                prob = 100;
+            
+            if (rnd.Next(100)<=prob&&w.name != null && w.name != "")
             {
                 g.DrawString(w.name, new Font("宋体", 9), new SolidBrush(Color.Tomato), li[0]);
             }
+            
         }
         private void drawspotanddir()
         {
@@ -564,7 +585,7 @@ namespace pj
         }
         public void clearpic()
         {
-            Color col = Color.FromArgb(100, 255, 255, 192);
+            Color col = Color.FromArgb(100,240, 237, 229);
             g.Clear(col);
         }
         private double[] trans(double lat, double lon,double zoomnow,double[] leastpos)
@@ -686,6 +707,7 @@ namespace pj
                     }
                 }
             }
+            MessageBox.Show("Oops!路径没找到");
         }
         private long tonode(long id){
             if (!nodedict.ContainsKey(id))
@@ -844,6 +866,7 @@ namespace pj
                     }
                 }
             }
+            MessageBox.Show("Oops!路径没找到");
         }
     }
 }
