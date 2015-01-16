@@ -14,7 +14,7 @@ namespace pj
     public class map
     {
         double[] blockbounds = new double[4];
-        int isblocked = 0;
+        public int isblocked = 0;
         Graphics g,gmain;
         public Bitmap bitmap;
         HashSet<long>[,] indexway;
@@ -322,6 +322,33 @@ namespace pj
             }
             //---------读取way数据
 
+
+            NodeList = xmldoc.SelectNodes("/osm/relation");
+            foreach (XmlNode relationnode in NodeList)
+            {
+                XmlNode way = relationnode.SelectSingleNode("member");
+                if (way==null||way.Attributes["type"].Value != "way")
+                    continue;
+                string wayname=null;
+                long wayid = Convert.ToInt64(way.Attributes["ref"].Value);
+                XmlNode n = relationnode.SelectSingleNode("tag[@k='name']");
+                if (n != null)
+                    wayname = n.Attributes["v"].Value;
+                else
+                {
+                    XmlNode n2 = relationnode.SelectSingleNode("tag[@k='name:en']");
+                    if (n != null)
+                        wayname = n.Attributes["v"].Value;
+                }
+                if (wayname != null)
+                {
+                    places[wayname] = new nodeinfo(wayid, false, false);
+                }
+
+            }
+
+            //---------读取relation数据
+
             indexsize = new int[2];
             indexsize = whichindex(bounds[2], bounds[3]);
             indexway = new HashSet<long>[indexsize[0] + 1, indexsize[1] + 1];
@@ -373,8 +400,8 @@ namespace pj
             {
                 double weigh = 1;
                 switch (w.highway){
-                    case 'm': weigh = 0.8; break;
-                    case 'k': weigh = 0.85; break;
+                    case 'm': weigh = 0.7; break;
+                    case 'k': weigh = 0.7; break;
                     case 'p': weigh = 0.9; break;
                     case 's': weigh = 1; break;
                     case 't': weigh = 1.1; break;

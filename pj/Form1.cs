@@ -60,6 +60,7 @@ namespace pj
                 double lon = (m.box[0] - mousepos[0]) / m.zoomnow + m.curedge[0];
                 double lat = mousepos[1] / m.zoomnow + m.curedge[1];
                 m.click(lat, lon);
+                button5.Visible = true;
                 return;
             }
             double changeposx = (e.Y - mousepos[0]) / m.zoomnow;
@@ -70,6 +71,7 @@ namespace pj
             m.curedge[0] = Math.Min(m.bounds[2] - m.box[0] / m.zoomnow, m.curedge[0]);
             m.curedge[1] = Math.Max(m.bounds[1], m.curedge[1]);
             m.curedge[1] = Math.Min(m.bounds[3] - m.box[1] / m.zoomnow, m.curedge[1]);
+            
             m.clearpic();
             m.draw();
         }
@@ -146,6 +148,14 @@ namespace pj
         private void Form1_Load(object sender, EventArgs e)
         {
 
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            m.isblocked = 0;
+            button5.Visible = false;
+            m.clearpic();
+            m.draw();
         }
         
     }

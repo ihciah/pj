@@ -43,6 +43,7 @@
             this.label4 = new System.Windows.Forms.Label();
             this.button4 = new System.Windows.Forms.Button();
             this.label5 = new System.Windows.Forms.Label();
+            this.button5 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -81,7 +82,7 @@
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(47, 153);
+            this.button2.Location = new System.Drawing.Point(44, 124);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(85, 40);
             this.button2.TabIndex = 2;
@@ -91,7 +92,7 @@
             // 
             // textBox1
             // 
-            this.textBox1.Location = new System.Drawing.Point(11, 122);
+            this.textBox1.Location = new System.Drawing.Point(15, 81);
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(166, 25);
             this.textBox1.TabIndex = 3;
@@ -181,11 +182,23 @@
             this.label5.Size = new System.Drawing.Size(0, 15);
             this.label5.TabIndex = 12;
             // 
+            // button5
+            // 
+            this.button5.Location = new System.Drawing.Point(83, 194);
+            this.button5.Name = "button5";
+            this.button5.Size = new System.Drawing.Size(73, 41);
+            this.button5.TabIndex = 13;
+            this.button5.Text = "清除封锁标记";
+            this.button5.UseVisualStyleBackColor = true;
+            this.button5.Visible = false;
+            this.button5.Click += new System.EventHandler(this.button5_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(952, 553);
+            this.Controls.Add(this.button5);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.button4);
             this.Controls.Add(this.label4);
@@ -225,5 +238,6 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Button button4;
         private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Button button5;
     }
 }
